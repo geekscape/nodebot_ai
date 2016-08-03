@@ -14,14 +14,6 @@ image_data, label_data = \
 		width=input_size,
 		minibatch_size=data_size)
 
-# validation_size = 1000
-
-# validation_image_data, validation_label_data = \
-# 	generate_data.generate_batch(
-# 		height=input_size,
-# 		width=input_size,
-# 		minibatch_size=validation_size)
-
 from tflearn.layers.core import input_data, fully_connected
 from tflearn.layers.conv import conv_2d
 from tflearn.layers.estimator import regression
