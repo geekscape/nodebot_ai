@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 from numpy import newaxis
 
@@ -24,10 +26,17 @@ network = fully_connected(network, 1, activation='linear')
 network = regression(network, optimizer='adam', learning_rate=0.001,
                      loss='mean_square', name='target')
 
+
+checkpoint_path = 'checkpoints'
+if not os.path.exists(checkpoint_path):
+    os.makedirs(checkpoint_path)
+
+
+# Train
+
 X = image_data
 Y = label_data[:,newaxis]
 
-# Train
 model = tflearn.DNN(network, tensorboard_verbose=0, checkpoint_path='checkpoints/road_model1')
 model.fit({'input': X}, {'target': Y}, n_epoch=100,
 		   validation_set=0.25,
