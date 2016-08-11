@@ -6,6 +6,7 @@ Contents
 - [Hardware](#hardware)
 - [Hardware assembly](#hardware-assembly)
 - [Hardware power supply](#hardware-power-supply)
+- [Software installation](#software-installation)
 
 <a name="hardware" />
 Hardware
@@ -38,3 +39,22 @@ All measurements at 5 VDC.  Raspberry Pi 2 has Wi-Pi (USB Wi-Fi dongle).
 - RPi2 CPU 100%, video and Wi-Fi transfer: 0.76 mA
 
 All up: RPi2 0.76 mA + Pixy 0.25 mA + mBot 0.27 mA = 1.28 mA total
+
+<a name="software-installation"/>
+## Software installation
+
+### Node:
+
+* Make sure NodeJS is installed (pref V6 branch)
+* cd to src/nodebot and run `npm install`
+
+### mBot Firmware
+
+Ensure `./node_modules/.bin` is on $PATH then:
+
+```
+interchange install git+https://github.com/Makeblock-official/mbot_nodebots -a uno --firmata=usb
+```
+
+
+
