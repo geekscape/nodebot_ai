@@ -28,7 +28,7 @@ HEIGHT_L=128
 # Remote host UDP stream
 #
 HOST_R=$host_remote
-PORT_R=5000
+PORT_R=5001
 FPS_R=10/1
 # Ratio 16:9 1.777
 WIDTH_R=512
@@ -41,14 +41,6 @@ ping -c 1 -q $HOST_R >/dev/null 2>&1
 if [ $? != 0 ]; then
   echo Switching $HOST_R to 127.0.0.1
   HOST_R=127.0.0.1
-fi
-
-# When all on the same machine, then avoid port collision
-#
-if [ $HOST_L = $HOST_R ]; then
-  PORT_NEW=`expr $PORT_R + 1`
-  echo Switching $HOST_R:$PORT_R to $HOST_R:$PORT_NEW
-  PORT_R=$PORT_NEW
 fi
 
 OS=`uname`
