@@ -1,24 +1,9 @@
 #!/usr/bin/env node
 
 /*
- * Resources
- * ~~~~~~~~~
- * github.com/Makeblock-official/mbot_nodebots/blob/master/examples/button.js
- *
- * github.com/Makeblock-official/mbot_nodebots/blob/master/examples/leds.js
- *
- * github.com/Makeblock-official/mbot_nodebots/blob/master/examples/light.js
- *
- * github.com/rwaldron/johnny-five/wiki/Motor
- * github.com/Makeblock-official/mbot_nodebots/blob/master/examples/motors.js
- *
- * github.com/Makeblock-official/mbot_nodebots/blob/master/examples/piezo.js
- *
- * github.com/Makeblock-official/mbot_nodebots/blob/master/examples/reflectance.js
- *
- * github.com/rwaldron/johnny-five/wiki/Proximity
- * github.com/Makeblock-official/mbot_nodebots/blob/master/examples/sonar.js
- * https://gist.githubusercontent.com/rwaldron/0519fcd5c48bfe43b827/raw/f17fb09b92ed04722953823d9416649ff380c35b/PingFirmata.ino
+ * Usage
+ * ~~~~~
+ *   node nodebot.js [stdin_off]
  *
  * Operating
  * ~~~~~~~~~
@@ -37,7 +22,28 @@
  * - Implement button sensor
  * - Implement light sensor
  * - Implement buzzer
+ *
+ * Resources
+ * ~~~~~~~~~
+ * github.com/Makeblock-official/mbot_nodebots/blob/master/examples/button.js
+ *
+ * github.com/Makeblock-official/mbot_nodebots/blob/master/examples/leds.js
+ *
+ * github.com/Makeblock-official/mbot_nodebots/blob/master/examples/light.js
+ *
+ * github.com/rwaldron/johnny-five/wiki/Motor
+ * github.com/Makeblock-official/mbot_nodebots/blob/master/examples/motors.js
+ *
+ * github.com/Makeblock-official/mbot_nodebots/blob/master/examples/piezo.js
+ *
+ * github.com/Makeblock-official/mbot_nodebots/blob/master/examples/reflectance.js
+ *
+ * github.com/rwaldron/johnny-five/wiki/Proximity
+ * github.com/Makeblock-official/mbot_nodebots/blob/master/examples/sonar.js
+ * https://gist.githubusercontent.com/rwaldron/0519fcd5c48bfe43b827/raw/f17fb09b92ed04722953823d9416649ff380c35b/PingFirmata.ino
  */
+
+var stdin_off = (process.argv.length === 3 && process.argv[2] === 'stdin_off');
 
 var UDP_PORT = 4000;
 
@@ -210,14 +216,16 @@ function action(command) {
   }
 }
 
-var stdin = process.stdin;
-stdin.setRawMode(true);
-stdin.resume();
-stdin.setEncoding('utf8');
+if (stdin_off === false) {
+  var stdin = process.stdin;
+  stdin.setRawMode(true);
+  stdin.resume();
+  stdin.setEncoding('utf8');
 
-stdin.on('data', function(key) {
-  action(key);
-});
+  stdin.on('data', function(key) {
+    action(key);
+  });
+}
 
 var server = dgram.createSocket('udp4');
 var ai_output_last = 0.0;

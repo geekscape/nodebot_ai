@@ -31,7 +31,7 @@ capture = cv2.VideoCapture(0)
 # print "Video width, height: " + str(video_size)
 
 model = train.build_model()
-model.load('checkpoints/road_model1-72')
+model.load('checkpoints/road_model1-360')
 
 def process_frame(frame):
   pr = model.predict(frame[np.newaxis, :, :, np.newaxis])
