@@ -20,15 +20,23 @@
  * github.com/Makeblock-official/mbot_nodebots/blob/master/examples/sonar.js
  * https://gist.githubusercontent.com/rwaldron/0519fcd5c48bfe43b827/raw/f17fb09b92ed04722953823d9416649ff380c35b/PingFirmata.ino
  *
+ * Operating
+ * ~~~~~~~~~
+ * - LED matrix: pin 14 clock, pin 15 data
+ * - Ultrasonic sensor (ping): pin A3
+ *
  * To Do
  * ~~~~~
- * - Implement sonar sensor (pin A3)
+ * - Implement "h" for help
+ * - LED screen: Motor speed as vertical bars
+ * - LED screen: AI output as horizontal bar
+ * - LED screen: Current state: f, b, l, r, s, ai on / off
+ *
  * - Implement line following: reflectance sensors
  * - Implement LEDs (pin 7 ?)
  * - Implement button sensor
  * - Implement light sensor
  * - Implement buzzer
- * - Implement LED matrix (pin 4 ?)
  */
 
 var UDP_PORT = 4000;
@@ -43,11 +51,14 @@ var speed_max    = 120;
 var speed_factor = 0.5;
 var speed_motor  = speed_factor * (speed_max - speed_min) + speed_min;
 
-var dgram      = require('dgram');
-var johnnyfive = require('johnny-five');
+var dgram       = require('dgram');
+var johnny_five = require('johnny-five');
+
+var led_screen = require('./tm1640_led_screen');
+var screen;
 
 console.log('Connecting to NodeBot');
-var board = new johnnyfive.Board({port: process.argv[2]});
+var board = new johnny_five.Board({port: process.argv[2]});
 
 var motor_left, motor_right;
 var state    = 'setup';
@@ -59,11 +70,16 @@ board.on('ready', function(error) {
     return;
   }
 
-  motor_left = new johnnyfive.Motor({
+  screen = led_screen.initialize(johnny_five, board, 14, 15);
+  led_screen.clear_screen(screen);
+  led_screen.draw_character(screen, 6, 1, '?');
+  led_screen.write_screen(screen);
+
+  motor_left = new johnny_five.Motor({
     pins: { pwm: 6, dir: 7 }
   });
 
-  motor_right = new johnnyfive.Motor({
+  motor_right = new johnny_five.Motor({
     pins: { pwm: 5, dir: 4 }
   });
 
@@ -72,7 +88,7 @@ board.on('ready', function(error) {
   state = 'stop';
   console.log('State: ' + state + ', ai: ' + state_ai);
 
-  var proximity = new johnnyfive.Proximity({
+  var proximity = new johnny_five.Proximity({
     freq:       250,
     controller: 'HCSR04',
     pin:        'A3'
