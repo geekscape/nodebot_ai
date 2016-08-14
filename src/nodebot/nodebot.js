@@ -228,7 +228,29 @@ function action(command) {
   }
 }
 
-if (stdin_off === false) {
+/*
+ * There is no stdin when running in the background,
+ * then create a stub stdin that does nothing.
+ */
+
+if (stdin_off) {
+  var Readable = require("stream").Readable;
+  var util     = require("util");
+
+  function MyStream(options) {
+    Readable.call(this, options);
+  }
+  MyStream.prototype._read = function() {};
+
+  util.inherits(MyStream, Readable);
+
+  process.__defineGetter__("stdin", function() {
+    if (process.__stdin) return(process.__stdin);
+    process.__stdin = new MyStream();
+    return(process.__stdin);
+  });
+}
+else {
   var stdin = process.stdin;
   stdin.setRawMode(true);
   stdin.resume();
