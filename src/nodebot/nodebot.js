@@ -3,7 +3,9 @@
 /*
  * Usage
  * ~~~~~
- *   node nodebot.js [stdin_off]
+ *   node nodebot.js            # keyboard enabled,  search for port
+ *   node nodebot.js stdin_off  # keyboard disabled, search for port
+ *   node nodebot.js port       # specific Johnny-Five board port
  *
  * Operating
  * ~~~~~~~~~
@@ -43,7 +45,17 @@
  * https://gist.githubusercontent.com/rwaldron/0519fcd5c48bfe43b827/raw/f17fb09b92ed04722953823d9416649ff380c35b/PingFirmata.ino
  */
 
-var stdin_off = (process.argv.length === 3 && process.argv[2] === 'stdin_off');
+var board_port;
+var stdin_off = false;
+
+if (process.argv.length === 3) {
+  if (process.argv[2] === 'stdin_off') {
+    stdin_off = true;
+  }
+  else {
+    board_port = process.argv[2]
+  }
+}
 
 var UDP_PORT = 4000;
 
@@ -62,7 +74,7 @@ var johnny_five = require('johnny-five');
 var led_screen  = require('./tm1640_led_screen');
 
 console.log('NodeBot: Connecting');
-var board = new johnny_five.Board({port: process.argv[2]});
+var board = new johnny_five.Board({port: board_port});
 
 var motor_left, motor_right;
 var screen;
