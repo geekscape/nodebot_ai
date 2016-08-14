@@ -53,14 +53,13 @@ var speed_motor  = speed_factor * (speed_max - speed_min) + speed_min;
 
 var dgram       = require('dgram');
 var johnny_five = require('johnny-five');
+var led_screen  = require('./tm1640_led_screen');
 
-var led_screen = require('./tm1640_led_screen');
-var screen;
-
-console.log('Connecting to NodeBot');
+console.log('NodeBot: Connecting');
 var board = new johnny_five.Board({port: process.argv[2]});
 
 var motor_left, motor_right;
+var screen;
 var state    = 'setup';
 var state_ai = false;
 
@@ -69,6 +68,8 @@ board.on('ready', function(error) {
     console.log(error);
     return;
   }
+
+  console.log('NodeBot: Connected');
 
   screen = led_screen.initialize(johnny_five, board, 14, 15);
   led_screen.clear_screen(screen);
@@ -120,7 +121,7 @@ board.on('ready', function(error) {
     }
   });
 
-  console.log('Connected to NodeBot');
+  console.log('NodeBot: Ready');
 });
 
 function action(command) {
@@ -185,6 +186,27 @@ function action(command) {
       state = 'stop';
       process.exit();
       break;
+
+    case 'mood:clear':
+      led_screen.clear_screen(screen);
+      led_screen.write_screen(screen);
+      break;
+
+    case 'mood:happy':
+      screen.matrix = new Buffer([
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x24, 0x44, 0x40,
+        0x40, 0x44, 0x24, 0x00, 0x00, 0x00, 0x00, 0x00
+      ]);
+      led_screen.write_screen(screen);
+      break;
+
+    case 'mood:sad':
+      screen.matrix = new Buffer([
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x24, 0x20,
+        0x20, 0x24, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00
+      ]);
+      led_screen.write_screen(screen);
+      break;
   }
 }
 
@@ -226,6 +248,9 @@ server.on('message', function (message, rinfo) {
         motor_right.forward(ai_motor_right * speed_motor * 2);
       }
     }
+  }
+  else if (message.startsWith('mood:')) {
+    action(message.substring(0, message.length -1));  // remove newline
   }
   else {
     action(message.substring(0,1));  // use first character
