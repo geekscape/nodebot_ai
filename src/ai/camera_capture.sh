@@ -2,10 +2,15 @@
 #
 # Local video capture sent over GStreamer RTP/H.264/UDP to local/remote hosts
 
-host_remote=nomad.local
+REMOTE_HOST=nomad.local  # classify_video.py
+REMOTE_PORT=5001         #   "           "
 
 if [ $# = 1 ]; then
-  host_remote=$1
+  REMOTE_HOST=$1
+fi
+
+if [ $# = 2 ]; then
+  REMOTE_PORT=$2
 fi
 
 # Raspberry Pi camera
@@ -27,8 +32,8 @@ HEIGHT_L=128
 
 # Remote host UDP stream
 #
-HOST_R=$host_remote
-PORT_R=5001
+HOST_R=$REMOTE_HOST
+PORT_R=$REMOTE_PORT
 FPS_R=10/1
 # Ratio 16:9 1.777
 WIDTH_R=512
@@ -39,9 +44,10 @@ HEIGHT_R=288
 ping -c 1 -q $HOST_R >/dev/null 2>&1
 
 if [ $? != 0 ]; then
-  echo Switching $HOST_R to 127.0.0.1
   HOST_R=127.0.0.1
 fi
+
+echo Remote camera stream: $HOST_R:$PORT_R
 
 OS=`uname`
 
