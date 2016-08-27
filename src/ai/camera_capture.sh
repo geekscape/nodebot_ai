@@ -5,11 +5,11 @@
 REMOTE_HOST=nomad.local  # classify_video.py
 REMOTE_PORT=5001         #   "           "
 
-if [ $# = 1 ]; then
+if [ $# -ge 1 ]; then
   REMOTE_HOST=$1
 fi
 
-if [ $# = 2 ]; then
+if [ $# -ge 2 ]; then
   REMOTE_PORT=$2
 fi
 
@@ -88,5 +88,6 @@ $RASPIVID | gst-launch-1.0 $CAMERA_SOURCE ! \
     video/x-raw,width=$WIDTH_R,height=$HEIGHT_R,framerate=$FPS_R ! \
     $OVERLAY ! \
     $H264_ENCODE ! \
+    video/x-h264,width=$WIDTH_R,height=$HEIGHT_R,framerate=$FPS_R ! \
     rtph264pay config-interval=5 pt=96 ! \
     udpsink host=$HOST_R port=$PORT_R sync=false async=true
